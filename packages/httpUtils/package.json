@@ -1,0 +1,30 @@
+{
+  "name": "@packages/httputils",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "handler.ts",
+  "types": "handler.ts",
+  "exports": {
+    ".": {
+      "types": "./handler.ts",
+      "import": "./handler.ts",
+      "default": "./handler.ts"
+    },
+    "./handler": {
+      "types": "./handler.ts",
+      "import": "./handler.ts",
+      "default": "./handler.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "hono": "^4.12.10"
+  },
+  "devDependencies": {
+    "@repo/esconfig": "workspace:*",
+    "@repo/tsconfig": "workspace:*"
+  }
+}

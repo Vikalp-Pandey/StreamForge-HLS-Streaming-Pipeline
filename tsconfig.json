@@ -1,0 +1,20 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/httpUtils"
+    },
+    {
+      "path": "./packages/env"
+    },
+    {
+      "path": "./packages/utils"
+    },
+    {
+      "path": "./services/email"
+    },
+    {
+      "path": "./services/auth"
+    }
+  ]
+}

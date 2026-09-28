@@ -1,0 +1,28 @@
+{
+  "name": "@repo/clients",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1137.0",
+    "@aws-sdk/client-sqs": "^3.1137.0",
+    "@repo/env": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/esconfig": "workspace:*",
+    "@repo/tsconfig": "workspace:*"
+  },
+  "exports": {
+    "./s3": {
+      "types": "./src/s3.ts",
+      "default": "./src/s3.ts"
+    },
+    "./sqs": {
+      "types": "./src/sqs.ts",
+      "default": "./src/sqs.ts"
+    }
+  }
+}
