@@ -9,7 +9,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1137.0",
     "@aws-sdk/client-sqs": "^3.1137.0",
-    "@repo/env": "workspace:*"
+    "@repo/env": "workspace:*",
+    "axios": "^1.14.0"
   },
   "devDependencies": {
     "@repo/esconfig": "workspace:*",
@@ -23,6 +24,10 @@
     "./sqs": {
       "types": "./src/sqs.ts",
       "default": "./src/sqs.ts"
+    },
+    "./transcoder": {
+      "types": "./src/transcoder.ts",
+      "default": "./src/transcoder.ts"
     }
   }
 }

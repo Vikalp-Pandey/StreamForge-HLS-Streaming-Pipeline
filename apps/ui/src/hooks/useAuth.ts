@@ -48,7 +48,7 @@ export const useAuth = () => {
       } else {
         const successMessage = data?.detail;
         toast.success(successMessage);
-        navigate('/upload');
+        navigate('/dashboard');
       }
     },
     onError: (error: unknown) => {
@@ -78,7 +78,7 @@ export const useAuth = () => {
     onSuccess: (data) => {
       const successMessage = data?.detail;
       toast.success(successMessage);
-      navigate('/upload');
+      navigate('/dashboard');
     },
   });
 

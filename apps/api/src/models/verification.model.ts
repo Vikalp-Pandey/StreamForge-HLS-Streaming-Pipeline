@@ -1,11 +1,6 @@
-import {
-  type InferSchemaType,
-  type Model,
-  model,
-  Schema,
-} from 'mongoose';
+import mongoose, { type InferSchemaType } from 'mongoose';
 
-const verificationSchema = new Schema(
+const verificationSchema = new mongoose.Schema(
   {
     type: {
       type: String,
@@ -25,4 +20,7 @@ verificationSchema.index({ email: 1, type: 1 });
 
 export type VerificationDocument = InferSchemaType<typeof verificationSchema>;
 
-export const Verification = model('Verification', verificationSchema) as Model<VerificationDocument>;
+export const Verification = mongoose.model<VerificationDocument>(
+  'Verification',
+  verificationSchema,
+);

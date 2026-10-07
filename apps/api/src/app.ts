@@ -45,10 +45,7 @@ app.get('/', (c) => {
   return c.text('HLStream API server is running');
 });
 
-
 app.notFound(notFound);
 app.onError(onError);
 
 export default app;
-
-

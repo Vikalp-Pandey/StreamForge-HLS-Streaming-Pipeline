@@ -1,5 +1,4 @@
 import { env } from '@repo/env/server';
-import { s3Client } from '@repo/clients/s3';
 
 import {
   CompleteMultipartUploadCommand,
@@ -8,6 +7,8 @@ import {
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
+import { s3Client } from '@repo/clients/s3';
 
 export const UPLOAD_PART_SIZE = 10 * 1024 * 1024;
 
@@ -82,7 +83,9 @@ export async function listUploadedParts(input: {
       : undefined;
   } while (partNumberMarker);
 
-  return uploadedParts.sort((left, right) => left.partNumber - right.partNumber);
+  return uploadedParts.sort(
+    (left, right) => left.partNumber - right.partNumber,
+  );
 }
 
 export async function completeMultipartUpload(input: {

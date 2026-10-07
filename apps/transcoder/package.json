@@ -1,0 +1,30 @@
+{
+  "name": "@repo/transcoder",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx --env-file=../../.env.development.local src/index.ts",
+    "dev": "docker compose -f ../../compose.yaml up --build --no-deps repotranscoder",
+    "dev:local": "tsx watch --env-file=../../.env.development.local src/index.ts",
+    "build": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1137.0",
+    "@aws-sdk/client-sqs": "^3.1137.0",
+    "@hono/node-server": "^1.19.12",
+    "@packages/httputils": "workspace:*",
+    "@repo/clients": "workspace:*",
+    "@repo/database": "workspace:*",
+    "@repo/env": "workspace:*",
+    "@repo/media-models": "workspace:*",
+    "hono": "^4.12.10",
+    "mongoose": "^9.4.1"
+  },
+  "devDependencies": {
+    "@repo/esconfig": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "tsx": "^4.21.0"
+  }
+}

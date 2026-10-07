@@ -47,6 +47,30 @@ export interface UploadedPart {
   uploadedAt?: string;
 }
 
+export interface DashboardVideo {
+  id: string;
+  originalName: string;
+  contentType: string;
+  size: number;
+  status: VideoStatus;
+  uploadProgress: number;
+  createdAt: string;
+  uploadedAt: string | null;
+  transcodeJob: {
+    id: string;
+    status: TranscodeJobStatus;
+    error: string | null;
+    startedAt: string | null;
+    completedAt: string | null;
+  } | null;
+  playbackReady: boolean;
+}
+
+export async function listVideos() {
+  const response = await api.get<ApiResponse<DashboardVideo[]>>('/videos');
+  return response.data.data;
+}
+
 async function sha256(data: ArrayBuffer): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', data);
   return [...new Uint8Array(digest)]
@@ -78,12 +102,15 @@ export async function startVideoUpload(
   file: File,
   fingerprint: string,
 ): Promise<UploadSession> {
-  const response = await api.post<ApiResponse<UploadSession>>('/videos/uploads', {
-    originalName: file.name,
-    contentType: file.type || 'video/mp4',
-    size: file.size,
-    fingerprint,
-  });
+  const response = await api.post<ApiResponse<UploadSession>>(
+    '/videos/uploads',
+    {
+      originalName: file.name,
+      contentType: file.type || 'video/mp4',
+      size: file.size,
+      fingerprint,
+    },
+  );
   return response.data.data;
 }
 
@@ -91,8 +118,7 @@ export function assignVideoPart(
   videoId: string,
   part: number,
 ): Promise<
-  | { status: 'signed'; url: string }
-  | { status: 'uploaded'; part: UploadedPart }
+  { status: 'signed'; url: string } | { status: 'uploaded'; part: UploadedPart }
 >;
 export function assignVideoPart(
   videoId: string,
@@ -133,9 +159,7 @@ export async function uploadPart(
   return { partNumber, etag, size: body.size, fingerprint };
 }
 
-export async function completeVideoUpload(
-  videoId: string,
-) {
+export async function completeVideoUpload(videoId: string) {
   const response = await api.post<
     ApiResponse<{
       completed: true;

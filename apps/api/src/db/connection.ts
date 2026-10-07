@@ -1,12 +1,16 @@
-import mongoose from 'mongoose';
 import { logger } from '@packages/httputils';
 
-export const connectToMongoDb = async (MongoURI: string) => {
-  try {
-    await mongoose.connect(MongoURI);
-    logger('INFO', 'MongoDB connected successfully');
-  } catch (error: any) {
-    logger('ERROR', `DbConnectionError: ${error.message}`);
-    throw error;
-  }
-};
+import { connectToMongoDB } from '@repo/database/mongo';
+
+export const connectToMongoDb = (mongoUri: string) =>
+  connectToMongoDB(mongoUri)
+    .then((connection) => {
+      logger('INFO', 'MongoDB connected successfully');
+      return connection;
+    })
+    .catch((error: unknown) => {
+      const message =
+        error instanceof Error ? error.message : 'Unknown MongoDB error';
+      logger('ERROR', `DbConnectionError: ${message}`);
+      throw error;
+    });

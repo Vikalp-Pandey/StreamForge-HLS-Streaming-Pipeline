@@ -11,8 +11,7 @@ node_modules
 .env.staging.local
 .env.production
 
-# Testing
-coverage
+
 
 # Turbo
 .turbo

@@ -1,0 +1,27 @@
+{
+  "name": "@repo/media-models",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "mongoose": "^9.4.1"
+  },
+  "devDependencies": {
+    "@repo/esconfig": "workspace:*",
+    "@repo/tsconfig": "workspace:*"
+  },
+  "exports": {
+    "./video": {
+      "types": "./src/video.ts",
+      "default": "./src/video.ts"
+    },
+    "./transcode-job": {
+      "types": "./src/transcode-job.ts",
+      "default": "./src/transcode-job.ts"
+    }
+  }
+}

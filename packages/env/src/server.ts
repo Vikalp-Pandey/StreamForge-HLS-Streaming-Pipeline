@@ -15,6 +15,35 @@ export const env = createEnv({
     AWS_SECRET_ACCESS_KEY: z.string().min(20),
     AWS_MEDIA_BUCKET: z.string().min(3),
     AWS_TRANSCODE_QUEUE_URL: z.url(),
+    FFMPEG_PATH: z.string().min(1).default('ffmpeg'),
+    STALE_PROCESSING_MS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(30 * 60 * 1000),
+    TRANSCODE_SQS_WAIT_SECONDS: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(20)
+      .default(20),
+    TRANSCODE_VISIBILITY_TIMEOUT_SECONDS: z.coerce
+      .number()
+      .int()
+      .positive()
+      .default(15 * 60),
+    TRANSCODER_PORT: z.coerce.number().int().min(1).max(65_535).default(8080),
+    TRANSCODER_URL: z.url().optional(),
+    TRANSCODER_INTERNAL_KEY: z.string().min(32).optional(),
+    PLAYBACK_URL_TTL_SECONDS: z.coerce
+      .number()
+      .int()
+      .min(60)
+      .max(24 * 60 * 60)
+      .default(4 * 60 * 60),
+    CLOUDFRONT_BASE_URL: z.url().optional(),
+    CLOUDFRONT_KEY_PAIR_ID: z.string().min(1).optional(),
+    CLOUDFRONT_PRIVATE_KEY: z.string().min(1).optional(),
 
     // Email
     SMTP_HOST: z.string(),
@@ -30,16 +59,16 @@ export const env = createEnv({
     ALLOWED_ORIGINS: z
       .string()
       .transform((val) => val.split(',').map((origin) => origin.trim())),
-    
+
     // COOKIE_DOMAIN: z.string(),
     /** App URLs */
-    JWT_SECRET:z.string(),
-    GITHUB_CLIENT_ID:z.string(),
-    GITHUB_CLIENT_SECRET:z.string(),
-    GITHUB_REDIRECT_URI:z.string(),
-    GOOGLE_CLIENT_ID:z.string(),
-    GOOGLE_CLIENT_SECRET:z.string(),
-    GOOGLE_REDIRECT_URI:z.string(),
+    JWT_SECRET: z.string(),
+    GITHUB_CLIENT_ID: z.string(),
+    GITHUB_CLIENT_SECRET: z.string(),
+    GITHUB_REDIRECT_URI: z.string(),
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
+    GOOGLE_REDIRECT_URI: z.string(),
   },
 
   runtimeEnv: process.env,

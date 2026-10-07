@@ -28,9 +28,12 @@ const createRecoveredPartFingerprint = (
   part: S3UploadedPart,
 ) =>
   createHash('sha256')
-    .update(`${uploadId}:${part.partNumber}:${normalizeEtag(part.etag)}:${part.size}`)
+    .update(
+      `${uploadId}:${part.partNumber}:${normalizeEtag(part.etag)}:${part.size}`,
+    )
     .digest('hex');
 
+    
 async function findOwnedUpload(ownerId: string, videoId: string) {
   return Video.findOne({
     _id: videoId,
@@ -86,7 +89,7 @@ export async function startVideoUpload(input: {
   const existingVideo = await Video.findOne({
     ownerId: input.ownerId,
     fingerprint: input.fingerprint,
-  }).sort({ createdAt: 1 });
+  });
 
   if (existingVideo?.status === 'UPLOADING') {
     const uploadedParts = await reconcileUploadedParts(existingVideo);
@@ -113,13 +116,13 @@ export async function startVideoUpload(input: {
       fingerprintMatched: true as const,
       alreadyUploaded: true as const,
       videoStatus: existingVideo.status,
-      transcodeJobId: transcodeJob?._id.toString() ?? null,
-      transcodeStatus: transcodeJob?.status ?? null,
+      transcodeJobId: transcodeJob?._id.toString(),
+      transcodeStatus: transcodeJob?.status ,
     };
   }
 
   const uploadKey = randomUUID();
-  const s3Key = `sources/${uploadKey}/original`;
+  const s3Key = `uploads/${uploadKey}/original`;
   const uploadId = await createMultipartUpload(s3Key, input.contentType);
 
   const video = await Video.create({
@@ -274,4 +277,48 @@ export async function finishVideoUpload(input: {
     transcodeJobId: transcodeJob._id.toString(),
     status: transcodeJob.status,
   };
+}
+
+export async function listOwnerVideos(ownerId: string) {
+  const videos = await Video.find({ ownerId })
+    .sort({ createdAt: -1 })
+    .limit(30)
+    .lean();
+  const jobs = await TranscodeJob.find({
+    video: { $in: videos.map((video) => video._id) },
+  }).lean();
+  const jobsByVideo = new Map(jobs.map((job) => [job.video.toString(), job]));
+
+  return videos.map((video) => {
+    const job = jobsByVideo.get(video._id.toString());
+    const uploadedBytes = video.uploadedParts.reduce(
+      (total, part) => total + part.size,
+      0,
+    );
+    const uploadProgress =
+      video.status === 'UPLOADED'
+        ? 100
+        : Math.min(99, Math.round((uploadedBytes / video.size) * 100));
+
+    return {
+      id: video._id.toString(),
+      originalName: video.originalName,
+      contentType: video.contentType,
+      size: video.size,
+      status: video.status,
+      uploadProgress,
+      createdAt: video.createdAt,
+      uploadedAt: video.uploadedAt ?? null,
+      transcodeJob: job
+        ? {
+            id: job._id.toString(),
+            status: job.status,
+            error: job.error ?? null,
+            startedAt: job.startedAt ?? null,
+            completedAt: job.completedAt ?? null,
+          }
+        : null,
+      playbackReady: job?.status === 'COMPLETED',
+    };
+  });
 }
