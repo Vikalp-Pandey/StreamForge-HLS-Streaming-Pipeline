@@ -5,6 +5,8 @@ export const env = createEnv({
   server: {
     // Environment
     ENVIRONMENT: z.enum(['development', 'staging', 'production']),
+    CLOUDFLARE_API_TOKEN: z.string().min(1).optional(),
+    CLOUDFLARE_DEFAULT_ACCOUNT_ID: z.string().min(1).optional(),
 
     // Database
     DATABASE_URL: z.url(),
@@ -42,8 +44,6 @@ export const env = createEnv({
       .max(24 * 60 * 60)
       .default(4 * 60 * 60),
     CLOUDFRONT_BASE_URL: z.url().optional(),
-    CLOUDFRONT_KEY_PAIR_ID: z.string().min(1).optional(),
-    CLOUDFRONT_PRIVATE_KEY: z.string().min(1).optional(),
 
     // Email
     SMTP_HOST: z.string(),

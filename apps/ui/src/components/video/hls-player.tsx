@@ -1,113 +1,123 @@
 import { useQuery } from '@tanstack/react-query';
-import type HlsInstance from 'hls.js';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import videojs from 'video.js';
+import type Player from 'video.js/dist/types/player';
+
+import 'video.js/dist/video-js.css';
+import 'videojs-contrib-quality-menu';
+import 'videojs-contrib-quality-menu/dist/videojs-contrib-quality-menu.css';
 
 import { env } from '@repo/env/client';
 
 import { getVideoPlayback } from '@/api/playback.api';
 
+import type { VideoPlayback } from '@/api/playback.api';
+
 interface HlsPlayerProps {
   videoId: string;
 }
 
-interface QualityOption {
-  index: number;
-  height: number;
+interface VhsRequestOptions {
+  uri: string;
+  withCredentials?: boolean;
+  [key: string]: unknown;
+}
+
+interface VhsXhr {
+  onRequest(callback: (options: VhsRequestOptions) => VhsRequestOptions): void;
+}
+
+interface VhsTech {
+  vhs?: {
+    xhr: VhsXhr;
+  };
+}
+
+interface QualityMenuPlayer extends Player {
+  qualityMenu(options?: {
+    defaultResolution?: string;
+    useResolutionLabels?: boolean;
+  }): void;
+}
+
+function VideoJsPlayer({ manifestUrl }: { manifestUrl: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const videoElement = document.createElement('video-js');
+    videoElement.classList.add('vjs-big-play-centered');
+    container.appendChild(videoElement);
+
+    const player = videojs(videoElement, {
+      controls: true,
+      responsive: true,
+      fluid: true,
+      preload: 'metadata',
+      playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
+      html5: {
+        vhs: {
+          overrideNative: true,
+        },
+      },
+    }) as QualityMenuPlayer;
+
+    const apiOrigin = new URL(env.VITE_API_URL, window.location.href).origin;
+    const requestHook = (options: VhsRequestOptions) => ({
+      ...options,
+      withCredentials:
+        apiOrigin === new URL(options.uri, window.location.href).origin,
+    });
+
+    player.on('xhr-hooks-ready', () => {
+      const tech = player.tech() as unknown as VhsTech;
+      tech.vhs?.xhr.onRequest(requestHook);
+    });
+
+    player.ready(() => {
+      player.qualityMenu({
+        defaultResolution: 'none',
+        useResolutionLabels: true,
+      });
+      player.src({
+        src: manifestUrl,
+        type: 'application/x-mpegURL',
+      });
+    });
+
+    return () => {
+      player.dispose();
+    };
+  }, [manifestUrl]);
+
+  return (
+    <div data-vjs-player className="overflow-hidden rounded-lg bg-black">
+      <div ref={containerRef} />
+    </div>
+  );
 }
 
 export function HlsPlayer({ videoId }: HlsPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const hlsRef = useRef<HlsInstance | undefined>(undefined);
-  const [playerError, setPlayerError] = useState<string | null>(null);
-  const [qualityOptions, setQualityOptions] = useState<QualityOption[]>([]);
-  const [selectedQuality, setSelectedQuality] = useState(-1);
-  const [activeHeight, setActiveHeight] = useState<number | null>(null);
-  const playbackQuery = useQuery({
+  const playbackQuery = useQuery<VideoPlayback>({
     queryKey: ['video-playback', videoId],
     queryFn: () => getVideoPlayback(videoId),
     refetchInterval: (query) => {
-      const status = query.state.data?.transcodeStatus;
+      const playback = query.state.data;
+      const status = playback?.transcodeStatus;
       return status === 'PENDING' || status === 'PROCESSING' ? 3_000 : false;
     },
   });
 
-  const manifestPath = playbackQuery.data?.manifestPath;
-  const manifestUrl = manifestPath
-    ? `${env.VITE_API_URL.replace(/\/$/, '')}${manifestPath}`
+  const playback = playbackQuery.data;
+  const manifestUrl = playback
+    ? (playback.manifestUrl ??
+      (playback.manifestPath
+        ? `${env.VITE_API_URL.replace(/\/$/, '')}${playback.manifestPath}`
+        : null))
     : null;
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video || !manifestUrl) return;
-
-    let cancelled = false;
-    let hls: HlsInstance | undefined;
-
-    setPlayerError(null);
-    setQualityOptions([]);
-    setSelectedQuality(-1);
-    setActiveHeight(null);
-
-    const attachPlayer = async () => {
-      const { default: Hls } = await import('hls.js');
-      if (cancelled) return;
-
-      if (Hls.isSupported()) {
-        const apiOrigin = new URL(env.VITE_API_URL, window.location.href)
-          .origin;
-        hls = new Hls({
-          xhrSetup: (xhr, url) => {
-            xhr.withCredentials =
-              new URL(url, window.location.href).origin === apiOrigin;
-          },
-        });
-        hlsRef.current = hls;
-
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          setQualityOptions(
-            hls?.levels.map((level, index) => ({
-              index,
-              height: level.height,
-            })) ?? [],
-          );
-        });
-        hls.on(Hls.Events.LEVEL_SWITCHED, (_event, data) => {
-          setActiveHeight(hls?.levels[data.level]?.height ?? null);
-        });
-
-        hls.on(Hls.Events.ERROR, (_event, data) => {
-          if (data.fatal) setPlayerError('The HLS stream could not be loaded.');
-        });
-        hls.loadSource(manifestUrl);
-        hls.attachMedia(video);
-
-        return;
-      }
-
-      if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.crossOrigin = 'use-credentials';
-        video.src = manifestUrl;
-        return;
-      }
-
-      setPlayerError('This browser does not support HLS playback.');
-    };
-
-    void attachPlayer();
-
-    return () => {
-      cancelled = true;
-      hls?.destroy();
-      hlsRef.current = undefined;
-      video.removeAttribute('src');
-    };
-  }, [manifestUrl]);
-
-  const selectQuality = (level: number) => {
-    setSelectedQuality(level);
-    if (hlsRef.current) hlsRef.current.currentLevel = level;
-  };
 
   if (playbackQuery.isLoading) {
     return (
@@ -140,41 +150,5 @@ export function HlsPlayer({ videoId }: HlsPlayerProps) {
     );
   }
 
-  return (
-    <div className="space-y-2">
-      <div className="relative">
-        <video
-          ref={videoRef}
-          controls
-          playsInline
-          className="aspect-video w-full rounded-lg border border-white/10 bg-black"
-        />
-        {qualityOptions.length > 0 && (
-          <label className="absolute top-2 right-2 rounded-md border border-white/10 bg-black/75 px-2 py-1 text-[10px] text-white backdrop-blur">
-            <span className="sr-only">Video quality</span>
-            <select
-              aria-label="Video quality"
-              value={selectedQuality}
-              onChange={(event) => selectQuality(Number(event.target.value))}
-              className="cursor-pointer bg-transparent font-semibold outline-none"
-            >
-              <option value={-1} className="bg-slate-950">
-                Auto{activeHeight ? ` (${activeHeight}p)` : ''}
-              </option>
-              {qualityOptions.map((quality) => (
-                <option
-                  key={quality.index}
-                  value={quality.index}
-                  className="bg-slate-950"
-                >
-                  {quality.height}p
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-      </div>
-      {playerError && <p className="text-xs text-red-400">{playerError}</p>}
-    </div>
-  );
+  return <VideoJsPlayer manifestUrl={manifestUrl} />;
 }

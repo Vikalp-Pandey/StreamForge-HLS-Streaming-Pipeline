@@ -18,7 +18,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.36.0",
-    "hls.js": "^1.7.3",
     "lucide-react": "^0.577.0",
     "radix-ui": "^1.4.3",
     "react": "^19.2.4",
@@ -29,6 +28,8 @@
     "react-toastify": "^11.0.5",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
+    "video.js": "^8.24.1",
+    "videojs-contrib-quality-menu": "^1.0.4",
     "zod": "^4.3.6"
   },
   "devDependencies": {

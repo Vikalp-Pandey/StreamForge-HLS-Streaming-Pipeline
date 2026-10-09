@@ -4,9 +4,6 @@ import type { Context } from 'hono';
 
 export const handleAuthResponse = (
   c:Context,
-  frontendState: string,
 ) => {
-  return sendRedirect(c, `${env.ALLOWED_ORIGINS[0]}/upload`, {
-    queryParams: { state: frontendState },
-  });
+  return sendRedirect(c, `${env.ALLOWED_ORIGINS[0]}/upload`);
 };

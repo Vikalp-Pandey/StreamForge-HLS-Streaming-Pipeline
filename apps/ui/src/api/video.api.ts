@@ -79,17 +79,8 @@ async function sha256(data: ArrayBuffer): Promise<string> {
 }
 
 export async function fingerprintFile(file: File): Promise<string> {
-  const fingerprintChunkSize = 4 * 1024 * 1024;
-  const chunkFingerprints: string[] = [];
-  for (let offset = 0; offset < file.size; offset += fingerprintChunkSize) {
-    chunkFingerprints.push(
-      await sha256(
-        await file.slice(offset, offset + fingerprintChunkSize).arrayBuffer(),
-      ),
-    );
-  }
   const metadata = new TextEncoder().encode(
-    `${file.name}\0${file.type || 'video/mp4'}\0${file.size}\0${chunkFingerprints.join(':')}`,
+    `${file.name}\0${file.type || 'video/mp4'}\0${file.size}\0${file.lastModified}`,
   );
   return sha256(metadata.buffer);
 }

@@ -11,6 +11,7 @@ export interface VideoPlayback {
   videoStatus: VideoStatus;
   transcodeStatus: TranscodeJobStatus | null;
   error?: string;
+  manifestUrl: string | null;
   manifestPath: string | null;
 }
 

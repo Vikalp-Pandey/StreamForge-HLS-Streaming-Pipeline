@@ -13,6 +13,16 @@
       "types": "./src/middlewares/validateUser.ts",
       "import": "./src/middlewares/validateUser.ts",
       "default": "./src/middlewares/validateUser.ts"
+    },
+    "./models/user": {
+      "types": "./src/models/user.model.ts",
+      "import": "./src/models/user.model.ts",
+      "default": "./src/models/user.model.ts"
+    },
+    "./models/verification": {
+      "types": "./src/models/verification.model.ts",
+      "import": "./src/models/verification.model.ts",
+      "default": "./src/models/verification.model.ts"
     }
   },
   "type": "module",
@@ -25,7 +35,7 @@
   "packageManager": "pnpm@10.30.3",
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
-    "@types/bcrypt": "^6.0.0"
+    "@types/node": "^25.5.2"
   },
   "dependencies": {
     "@packages/httputils": "workspace:*",
@@ -33,7 +43,8 @@
     "@repo/utils": "workspace:*",
     "@services/email": "workspace:*",
     "axios": "^1.14.0",
-    "bcrypt": "^6.0.0",
-    "hono": "^4.12.10"
+    "bcryptjs": "^3.0.3",
+    "hono": "^4.12.10",
+    "mongoose": "^9.4.1"
   }
 }

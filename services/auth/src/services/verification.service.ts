@@ -1,4 +1,4 @@
-import { Verification } from '../../../../apps/api/src/models/verification.model';
+import { Verification } from '@repo/auth/models/verification';
 
 export interface CreateVerificationInput {
   type: 'otp' | 'reset_link';

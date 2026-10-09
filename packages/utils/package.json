@@ -9,13 +9,13 @@
   "dependencies": {
     "@repo/env": "workspace:*",
     "crypto": "^1.0.1",
+    "jsonwebtoken": "^9.0.3",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@repo/esconfig": "workspace:*",
     "@repo/tsconfig": "workspace:*",
-    "@types/jsonwebtoken": "^9.0.10",
-    "jsonwebtoken": "^9.0.3"
+    "@types/jsonwebtoken": "^9.0.10"
   },
   "exports": {
     "./*": {

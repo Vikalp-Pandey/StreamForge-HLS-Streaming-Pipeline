@@ -1,4 +1,4 @@
-import User from '../../../../apps/api/src/models/user.model';
+import User from '@repo/auth/models/user';
 
 export interface CreateUserInput {
   name: string;

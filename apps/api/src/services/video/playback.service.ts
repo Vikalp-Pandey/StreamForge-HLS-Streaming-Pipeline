@@ -3,7 +3,6 @@ import { env } from '@repo/env/server';
 import path from 'node:path';
 
 import { GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl as getCloudFrontSignedUrl } from '@aws-sdk/cloudfront-signer';
 import { getSignedUrl as getS3SignedUrl } from '@aws-sdk/s3-request-presigner';
 
 import { s3Client } from '@repo/clients/s3';
@@ -14,54 +13,7 @@ import Video from '@/models/video.model';
 const TRANSCODED_PREFIX = 'transcoded';
 const RENDITION_NAMES = new Set(['360p', '480p', '720p', '1080p']);
 
-function cloudFrontConfig() {
-  const values = [
-    env.CLOUDFRONT_BASE_URL,
-    env.CLOUDFRONT_KEY_PAIR_ID,
-    env.CLOUDFRONT_PRIVATE_KEY,
-  ];
-  const configuredValues = values.filter(Boolean).length;
-
-  if (configuredValues === 0) return null;
-  if (configuredValues !== values.length) {
-    throw new Error(
-      'CloudFront playback requires CLOUDFRONT_BASE_URL, CLOUDFRONT_KEY_PAIR_ID and CLOUDFRONT_PRIVATE_KEY.',
-    );
-  }
-
-  return {
-    baseUrl: env.CLOUDFRONT_BASE_URL!.replace(/\/$/, ''),
-    keyPairId: env.CLOUDFRONT_KEY_PAIR_ID!,
-    privateKey: env.CLOUDFRONT_PRIVATE_KEY!.replace(/\\n/g, '\n'),
-  };
-}
-
-async function signPlaybackObject(videoId: string, objectKey: string) {
-  const cloudFront = cloudFrontConfig();
-  const expiresAt = new Date(Date.now() + env.PLAYBACK_URL_TTL_SECONDS * 1000);
-
-  if (cloudFront) {
-    const policy = JSON.stringify({
-      Statement: [
-        {
-          Resource: `${cloudFront.baseUrl}/${TRANSCODED_PREFIX}/${videoId}/*`,
-          Condition: {
-            DateLessThan: {
-              'AWS:EpochTime': Math.floor(expiresAt.getTime() / 1000),
-            },
-          },
-        },
-      ],
-    });
-
-    return getCloudFrontSignedUrl({
-      url: `${cloudFront.baseUrl}/${objectKey}`,
-      keyPairId: cloudFront.keyPairId,
-      privateKey: cloudFront.privateKey,
-      policy,
-    });
-  }
-
+async function signPlaybackObject(objectKey: string) {
   return getS3SignedUrl(
     s3Client,
     new GetObjectCommand({
@@ -78,13 +30,18 @@ export async function getPlaybackState(ownerId: string, videoId: string) {
 
   const job = await TranscodeJob.findOne({ video: video._id });
 
+  const playbackReady = job?.status === 'COMPLETED';
+  const baseUrl = env.CLOUDFRONT_BASE_URL?.replace(/\/$/, '');
+  const objectPath = `${TRANSCODED_PREFIX}/${video._id.toString()}/index.m3u8`;
+
   return {
     videoId: video._id.toString(),
     videoStatus: video.status,
     transcodeStatus: job?.status ?? null,
     error: job?.status === 'FAILED' ? job.error : undefined,
+    manifestUrl: playbackReady && baseUrl ? `${baseUrl}/${objectPath}` : null,
     manifestPath:
-      job?.status === 'COMPLETED'
+      playbackReady && !baseUrl
         ? `/videos/${video._id.toString()}/playback/index.m3u8`
         : null,
   };
@@ -143,7 +100,7 @@ export async function createPlaybackManifest(
         throw new Error('The HLS playlist references media outside its video.');
       }
 
-      return signPlaybackObject(videoId, objectKey);
+      return signPlaybackObject(objectKey);
     }),
   );
 

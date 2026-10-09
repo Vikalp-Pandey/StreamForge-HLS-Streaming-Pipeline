@@ -10,6 +10,7 @@ node_modules
 .env.development.local
 .env.staging.local
 .env.production
+.env.production.local
 
 
 
@@ -29,6 +30,7 @@ dist
 
 # Local implementation guides
 docs/
+infra/
 
 # Debug
 logs/

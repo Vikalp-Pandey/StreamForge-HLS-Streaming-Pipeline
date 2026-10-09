@@ -77,14 +77,11 @@ export const googleCallback = asyncHandler(async (c:Context)=>{
                 picture: user.picture,
             });
         }
-        const frontendState = await signjwt({
-                   payload: { id: authenticatedUser.id, name: authenticatedUser.name, email: authenticatedUser.email }
-            });
         const token = await signjwt({
             payload: { id: authenticatedUser.id, name: authenticatedUser.name, email: authenticatedUser.email }
         });
         sendCookie(c, 'accessToken', token, cookieConfig, {
             maxAge: 60 * 60 * 1000,
         });
-        return handleAuthResponse(c, frontendState);
+        return handleAuthResponse(c);
 });

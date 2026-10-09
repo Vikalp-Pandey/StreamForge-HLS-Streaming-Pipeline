@@ -1,7 +1,5 @@
 import { env } from '@repo/env/server';
-
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
-
 import { sqsClient } from '@repo/clients/sqs';
 
 export async function enqueueTranscodeJob(transcodeJobId: string) {

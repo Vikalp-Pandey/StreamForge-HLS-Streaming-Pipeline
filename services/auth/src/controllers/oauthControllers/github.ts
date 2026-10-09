@@ -83,9 +83,6 @@ export const githubCallback = asyncHandler(async (c:Context)=>{
                 email: normalizedEmail,
             });
         }
-        const frontendState = await signjwt({
-                   payload: { id: authenticatedUser.id, name: authenticatedUser.name, email: authenticatedUser.email }
-            });
         const token = await signjwt({
             payload: { id: authenticatedUser.id, name: authenticatedUser.name, email: authenticatedUser.email }
         });
@@ -93,6 +90,6 @@ export const githubCallback = asyncHandler(async (c:Context)=>{
             maxAge: 60 * 60 * 1000,
         });
 
-       return handleAuthResponse(c, frontendState);
+       return handleAuthResponse(c);
 });
 

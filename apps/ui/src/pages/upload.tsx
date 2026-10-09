@@ -24,12 +24,10 @@ import {
   listVideos,
   startVideoUpload,
   uploadPart,
-  type TranscodeJobStatus,
   type UploadedPart,
   type VideoStatus,
 } from '@/api/video.api';
 import { Brand } from '@/components/brand';
-import { PipelineOverview } from '@/components/dashboard/pipeline-overview';
 import { VideoCard } from '@/components/dashboard/video-card';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/hooks/useAuth';
@@ -47,8 +45,6 @@ export default function UploadPage() {
   const [progress, setProgress] = useState(0);
   const [message, setMessage] = useState('Choose a video to begin.');
   const [videoStatus, setVideoStatus] = useState<VideoStatus | null>(null);
-  const [transcodeStatus, setTranscodeStatus] =
-    useState<TranscodeJobStatus | null>(null);
   const userQuery = useUser();
   const queryClient = useQueryClient();
   const { control, handleSubmit, register } = useForm<UploadFormValues>();
@@ -77,9 +73,7 @@ export default function UploadPage() {
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      setMessage(
-        'Fingerprinting the video and checking for an interrupted upload...',
-      );
+      setMessage('Preparing your video...');
 
       const fileFingerprint = await fingerprintFile(file);
       const session = await startVideoUpload(file, fileFingerprint);
@@ -87,20 +81,20 @@ export default function UploadPage() {
 
       if (session.alreadyUploaded) {
         setVideoStatus(session.videoStatus);
-        setTranscodeStatus(session.transcodeStatus);
         setProgress(session.videoStatus === 'UPLOADED' ? 100 : 0);
         setMessage(
           session.videoStatus === 'FAILED'
-            ? 'The previous source upload failed.'
+            ? 'The previous upload failed.'
             : session.transcodeJobId && session.transcodeStatus
-              ? `Already uploaded. Transcode job is ${session.transcodeStatus.toLowerCase()}.`
-              : 'This video is already stored in S3.',
+              ? session.transcodeStatus === 'COMPLETED'
+                ? 'This video is already ready to watch.'
+                : 'This video is already uploaded and is being prepared.'
+              : 'This video has already been uploaded.',
         );
         return session;
       }
 
       setVideoStatus('UPLOADING');
-      setTranscodeStatus(null);
 
       const parts = new Map<number, UploadedPart>(
         session.parts.map((part) => [part.partNumber, part]),
@@ -109,9 +103,7 @@ export default function UploadPage() {
 
       setProgress(Math.round((parts.size / partCount) * 100));
       setMessage(
-        parts.size > 0
-          ? `Resuming after ${parts.size} uploaded part(s).`
-          : 'Uploading parts directly to S3...',
+        parts.size > 0 ? 'Resuming your upload...' : 'Uploading your video...',
       );
 
       for (let index = 0; index < partCount; index += 1) {
@@ -147,8 +139,7 @@ export default function UploadPage() {
       const result = await completeVideoUpload(session.videoId);
       setProgress(100);
       setVideoStatus('UPLOADED');
-      setTranscodeStatus(result.status);
-      setMessage('Upload complete. The SQS transcode job is now pending.');
+      setMessage('Upload complete. Your video is being prepared.');
       return result;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['videos'] }),
@@ -255,206 +246,188 @@ export default function UploadPage() {
           </header>
 
           <div className="space-y-8 px-5 py-8 sm:px-8 lg:px-10 lg:py-10 xl:px-12">
-        <section id="overview" className="flex scroll-mt-8 flex-col justify-between gap-6 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-medium text-sky-400">
-              Video workspace
-            </p>
-            <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-white lg:text-[2.5rem]">
-              Good to see you, {userQuery.data.data.name.split(' ')[0]}.
-            </h1>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
-              Upload source video, follow its progress, and watch it when the
-              stream is ready.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            {[
-              ['Videos', videos.length],
-              ['Processing', processingCount],
-              ['Ready', readyCount],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="min-w-24 rounded-xl border border-white/7 bg-[#0d1117] px-4 py-3"
-              >
-                <p className="text-xl font-semibold text-white">{value}</p>
-                <p className="mt-0.5 text-[10px] text-slate-600">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <div id="new-upload" className="grid scroll-mt-8 gap-5 xl:grid-cols-[380px_1fr]">
-          <motion.form
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl border border-white/7 bg-[#0d1117] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
-            onSubmit={handleSubmit(({ video }) =>
-              uploadMutation.mutate(video[0]),
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-bold tracking-[0.2em] text-sky-400 uppercase">
-                  New source
-                </p>
-                <h2 className="mt-2 text-lg font-semibold text-white">
-                  Upload video
-                </h2>
-              </div>
-              <span className="grid size-9 place-items-center rounded-lg bg-sky-500/10 text-sky-400">
-                <UploadCloud size={17} />
-              </span>
-            </div>
-
-            <label
-              htmlFor="video"
-              className={`group mt-5 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 text-center transition ${
-                selectedFile
-                  ? 'border-sky-500/30 bg-sky-500/5'
-                  : 'border-white/10 bg-black/20 hover:border-sky-500/30'
-              } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
+            <section
+              id="overview"
+              className="flex scroll-mt-8 flex-col justify-between gap-6 sm:flex-row sm:items-end"
             >
-              <FileVideo
-                size={22}
-                className={selectedFile ? 'text-sky-400' : 'text-slate-700'}
-              />
-              <span className="mt-3 max-w-full truncate text-xs font-medium text-slate-300">
-                {selectedFile?.name ?? 'Choose a video file'}
-              </span>
-              <span className="mt-1 text-[10px] text-slate-600">
-                {selectedFile
-                  ? `${formatFileSize(selectedFile.size)} · click to replace`
-                  : 'Large files automatically use multipart upload'}
-              </span>
-            </label>
-            <input
-              id="video"
-              type="file"
-              accept="video/*"
-              disabled={uploading}
-              className="sr-only"
-              {...register('video', {
-                required: true,
-                onChange: () => {
-                  setProgress(0);
-                  setMessage('Ready to upload.');
-                  setVideoStatus(null);
-                  setTranscodeStatus(null);
-                  uploadMutation.reset();
-                },
-              })}
-            />
+              <div>
+                <p className="text-xs font-medium text-sky-400">
+                  Video workspace
+                </p>
+                <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] text-white lg:text-[2.5rem]">
+                  Good to see you, {userQuery.data.data.name.split(' ')[0]}.
+                </h1>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+                  Upload source video, follow its progress, and watch it when
+                  the stream is ready.
+                </p>
+              </div>
 
-            <div className="mt-5 space-y-2.5">
-              <div className="flex items-center justify-between text-[9px] font-bold tracking-wider uppercase">
-                <span className="text-slate-600">Multipart transfer</span>
-                <span
-                  className={complete ? 'text-emerald-400' : 'text-sky-400'}
-                >
-                  {progress}%
-                </span>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  ['Videos', videos.length],
+                  ['Processing', processingCount],
+                  ['Ready', readyCount],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="min-w-24 rounded-xl border border-white/7 bg-[#0d1117] px-4 py-3"
+                  >
+                    <p className="text-xl font-semibold text-white">{value}</p>
+                    <p className="mt-0.5 text-[10px] text-slate-600">{label}</p>
+                  </div>
+                ))}
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
-                <motion.div
-                  className={`h-full rounded-full ${complete ? 'bg-emerald-500' : 'bg-sky-500'}`}
-                  animate={{ width: `${progress}%` }}
-                />
-              </div>
-              <p className="flex min-h-9 gap-2 text-[10px] leading-relaxed text-slate-500">
-                {complete && (
-                  <CheckCircle2
-                    className="mt-0.5 shrink-0 text-emerald-500"
-                    size={12}
-                  />
+            </section>
+
+            <div id="new-upload" className="flex scroll-mt-8 justify-center">
+              <motion.form
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="w-full max-w-[460px] rounded-2xl border border-white/7 bg-[#0d1117] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)]"
+                onSubmit={handleSubmit(({ video }) =>
+                  uploadMutation.mutate(video[0]),
                 )}
-                {message}
-              </p>
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-sky-400 uppercase">
+                      New source
+                    </p>
+                    <h2 className="mt-2 text-lg font-semibold text-white">
+                      Upload video
+                    </h2>
+                  </div>
+                  <span className="grid size-9 place-items-center rounded-lg bg-sky-500/10 text-sky-400">
+                    <UploadCloud size={17} />
+                  </span>
+                </div>
+
+                <label
+                  htmlFor="video"
+                  className={`group mt-5 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed px-5 text-center transition ${
+                    selectedFile
+                      ? 'border-sky-500/30 bg-sky-500/5'
+                      : 'border-white/10 bg-black/20 hover:border-sky-500/30'
+                  } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
+                >
+                  <FileVideo
+                    size={22}
+                    className={selectedFile ? 'text-sky-400' : 'text-slate-700'}
+                  />
+                  <span className="mt-3 max-w-full truncate text-xs font-medium text-slate-300">
+                    {selectedFile?.name ?? 'Choose a video file'}
+                  </span>
+                  <span className="mt-1 text-[10px] text-slate-600">
+                    {selectedFile
+                      ? `${formatFileSize(selectedFile.size)} · click to replace`
+                      : 'Large files automatically use multipart upload'}
+                  </span>
+                </label>
+                <input
+                  id="video"
+                  type="file"
+                  accept="video/*"
+                  disabled={uploading}
+                  className="sr-only"
+                  {...register('video', {
+                    required: true,
+                    onChange: () => {
+                      setProgress(0);
+                      setMessage('Ready to upload.');
+                      setVideoStatus(null);
+                      uploadMutation.reset();
+                    },
+                  })}
+                />
+
+                <div className="mt-5 space-y-2.5">
+                  <div className="flex items-center justify-between text-[9px] font-bold tracking-wider uppercase">
+                    <span className="text-slate-600">Upload progress</span>
+                    <span
+                      className={complete ? 'text-emerald-400' : 'text-sky-400'}
+                    >
+                      {progress}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-white/5">
+                    <motion.div
+                      className={`h-full rounded-full ${complete ? 'bg-emerald-500' : 'bg-sky-500'}`}
+                      animate={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <p className="flex min-h-9 gap-2 text-[10px] leading-relaxed text-slate-500">
+                    {complete && (
+                      <CheckCircle2
+                        className="mt-0.5 shrink-0 text-emerald-500"
+                        size={12}
+                      />
+                    )}
+                    {message}
+                  </p>
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={!selectedFile || uploading}
+                  className="mt-4 h-11 w-full rounded-lg bg-sky-600 text-xs font-bold text-white hover:bg-sky-500"
+                >
+                  {uploading ? (
+                    <>
+                      <Loader2 className="animate-spin" /> Uploading {progress}%
+                    </>
+                  ) : (
+                    'Start or resume upload'
+                  )}
+                </Button>
+              </motion.form>
             </div>
 
-            <Button
-              type="submit"
-              disabled={!selectedFile || uploading}
-              className="mt-4 h-11 w-full rounded-lg bg-sky-600 text-xs font-bold text-white hover:bg-sky-500"
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="animate-spin" /> Uploading {progress}%
-                </>
+            <section id="library" className="scroll-mt-8">
+              <div className="mb-5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="grid size-9 place-items-center rounded-lg border border-white/7 bg-white/3 text-slate-500">
+                    <LayoutGrid size={16} />
+                  </span>
+                  <h2 className="text-lg font-semibold text-white">
+                    Your streams
+                  </h2>
+                </div>
+                {videosQuery.isFetching && (
+                  <span className="flex items-center gap-2 text-[10px] text-slate-600">
+                    <Loader2 size={11} className="animate-spin" /> Refreshing
+                  </span>
+                )}
+              </div>
+
+              {videosQuery.isError ? (
+                <div className="flex items-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 p-4 text-xs text-red-300">
+                  <CircleAlert size={16} /> Unable to load the video library.
+                </div>
+              ) : videosQuery.isLoading ? (
+                <div className="grid min-h-52 place-items-center rounded-2xl border border-white/6 bg-white/[0.02] text-slate-600">
+                  <Loader2 className="animate-spin" />
+                </div>
+              ) : videos.length === 0 ? (
+                <div className="grid min-h-56 place-items-center rounded-2xl border border-dashed border-white/8 bg-white/[0.015] text-center">
+                  <div>
+                    <FileVideo className="mx-auto text-slate-700" size={28} />
+                    <p className="mt-3 text-sm font-medium text-slate-400">
+                      No videos yet
+                    </p>
+                    <p className="mt-1 text-xs text-slate-700">
+                      Your first upload will appear here immediately.
+                    </p>
+                  </div>
+                </div>
               ) : (
-                'Start or resume upload'
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {videos.map((video) => (
+                    <VideoCard key={video.id} video={video} />
+                  ))}
+                </div>
               )}
-            </Button>
-
-            {(videoStatus || transcodeStatus) && (
-              <div className="mt-3 flex gap-2 text-[9px] font-bold tracking-wider uppercase">
-                <span className="rounded-md bg-white/4 px-2 py-1 text-slate-500">
-                  Source: {videoStatus}
-                </span>
-                <span className="rounded-md bg-white/4 px-2 py-1 text-slate-500">
-                  Job: {transcodeStatus ?? 'not created'}
-                </span>
-              </div>
-            )}
-          </motion.form>
-
-          <PipelineOverview />
-        </div>
-
-        <section id="library" className="scroll-mt-8">
-          <div className="mb-5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="grid size-9 place-items-center rounded-lg border border-white/7 bg-white/3 text-slate-500">
-                <LayoutGrid size={16} />
-              </span>
-              <div>
-                <h2 className="text-lg font-semibold text-white">
-                  Your streams
-                </h2>
-                <p className="text-xs text-slate-600">
-                  Live status from MongoDB and the transcode queue
-                </p>
-              </div>
-            </div>
-            {videosQuery.isFetching && (
-              <span className="flex items-center gap-2 text-[10px] text-slate-600">
-                <Loader2 size={11} className="animate-spin" /> Refreshing
-              </span>
-            )}
-          </div>
-
-          {videosQuery.isError ? (
-            <div className="flex items-center gap-3 rounded-xl border border-red-500/10 bg-red-500/5 p-4 text-xs text-red-300">
-              <CircleAlert size={16} /> Unable to load the video library.
-            </div>
-          ) : videosQuery.isLoading ? (
-            <div className="grid min-h-52 place-items-center rounded-2xl border border-white/6 bg-white/[0.02] text-slate-600">
-              <Loader2 className="animate-spin" />
-            </div>
-          ) : videos.length === 0 ? (
-            <div className="grid min-h-56 place-items-center rounded-2xl border border-dashed border-white/8 bg-white/[0.015] text-center">
-              <div>
-                <FileVideo className="mx-auto text-slate-700" size={28} />
-                <p className="mt-3 text-sm font-medium text-slate-400">
-                  No videos yet
-                </p>
-                <p className="mt-1 text-xs text-slate-700">
-                  Your first upload will appear here immediately.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {videos.map((video) => (
-                <VideoCard key={video.id} video={video} />
-              ))}
-            </div>
-          )}
-        </section>
+            </section>
           </div>
         </main>
       </div>
