@@ -17,5 +17,3 @@ export default defineConfig({
   // It tells Vite to load environment variables from the '../../' directory in which env file is present.
   envDir: '../../',
 });
-
-

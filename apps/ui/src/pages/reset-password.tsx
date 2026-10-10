@@ -57,9 +57,9 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-[#050505] font-sans selection:bg-sky-500/30 text-slate-200">
-      <div className="hidden lg:flex flex-col justify-between p-24 bg-[#080808] relative overflow-hidden border-r border-white/[0.03]">
-        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-sky-900/10 blur-[120px] rounded-full" />
+    <div className="grid min-h-screen bg-[#050505] font-sans text-slate-200 selection:bg-sky-500/30 lg:grid-cols-2">
+      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-white/[0.03] bg-[#080808] p-24 lg:flex">
+        <div className="absolute top-[-20%] left-[-10%] h-[70%] w-[70%] rounded-full bg-sky-900/10 blur-[120px]" />
 
         <div className="relative z-10">
           <div className="inline-flex">
@@ -72,21 +72,21 @@ export default function ResetPasswordPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <h1 className="text-5xl font-light leading-[1.2] text-white tracking-tight">
+            <h1 className="text-5xl leading-[1.2] font-light tracking-tight text-white">
               Update your <br />
-              <span className="text-slate-500 font-medium">access keys.</span>
+              <span className="font-medium text-slate-500">access keys.</span>
             </h1>
           </motion.div>
 
           <div className="h-px w-12 bg-sky-500" />
 
-          <p className="max-w-xs text-sm text-slate-500 font-light leading-relaxed tracking-wide">
+          <p className="max-w-xs text-sm leading-relaxed font-light tracking-wide text-slate-500">
             You are establishing a new high-entropy password. Ensure your new
             credentials are kept secure.
           </p>
         </div>
 
-        <div className="relative z-10 text-[10px] tracking-[0.4em] text-slate-600 font-bold uppercase">
+        <div className="relative z-10 text-[10px] font-bold tracking-[0.4em] text-slate-600 uppercase">
           Handshake Verified // Token Active
         </div>
       </div>
@@ -101,18 +101,18 @@ export default function ResetPasswordPage() {
 
           <button
             onClick={() => navigate('/login')}
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-sky-500 transition-colors text-[10px] font-bold uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase transition-colors hover:text-sky-500"
           >
             <ArrowLeft size={14} /> Abort Update
           </button>
 
           <div className="space-y-10">
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-white tracking-tight">
+              <h2 className="text-2xl font-semibold tracking-tight text-white">
                 Reset Password
               </h2>
 
-              <p className="text-slate-500 text-sm">
+              <p className="text-sm text-slate-500">
                 Please enter and confirm your new password.
               </p>
             </div>
@@ -123,23 +123,23 @@ export default function ResetPasswordPage() {
               {/* PASSWORD */}
 
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                <Label className="ml-1 text-[11px] font-bold tracking-widest text-slate-500 uppercase">
                   New Password
                 </Label>
 
                 <div className="relative">
-                  <Lock className="absolute left-4 top-3.5 h-4 w-4 text-slate-700" />
+                  <Lock className="absolute top-3.5 left-4 h-4 w-4 text-slate-700" />
 
                   <Input
                     {...register('password')}
                     type={showPass ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className="h-12 pl-11 rounded-lg border-white/[0.05] bg-white/[0.02] text-white focus:border-sky-500/50 focus:ring-0 placeholder:text-slate-800 transition-all font-mono"
+                    className="h-12 rounded-lg border-white/[0.05] bg-white/[0.02] pl-11 font-mono text-white transition-all placeholder:text-slate-800 focus:border-sky-500/50 focus:ring-0"
                   />
                 </div>
 
                 {errors.password && (
-                  <p className="text-[10px] text-rose-500 font-bold uppercase mt-1 ml-1">
+                  <p className="mt-1 ml-1 text-[10px] font-bold text-rose-500 uppercase">
                     {errors.password.message}
                   </p>
                 )}
@@ -148,23 +148,23 @@ export default function ResetPasswordPage() {
               {/* CONFIRM PASSWORD */}
 
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                <Label className="ml-1 text-[11px] font-bold tracking-widest text-slate-500 uppercase">
                   Confirm Password
                 </Label>
 
                 <div className="relative">
-                  <ShieldCheck className="absolute left-4 top-3.5 h-4 w-4 text-slate-700" />
+                  <ShieldCheck className="absolute top-3.5 left-4 h-4 w-4 text-slate-700" />
 
                   <Input
                     {...register('confirmPassword')}
                     type={showPass ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className="h-12 pl-11 rounded-lg border-white/[0.05] bg-white/[0.02] text-white focus:border-sky-500/50 focus:ring-0 placeholder:text-slate-800 transition-all font-mono"
+                    className="h-12 rounded-lg border-white/[0.05] bg-white/[0.02] pl-11 font-mono text-white transition-all placeholder:text-slate-800 focus:border-sky-500/50 focus:ring-0"
                   />
                 </div>
 
                 {errors.confirmPassword && (
-                  <p className="text-[10px] text-rose-500 font-bold uppercase mt-1 ml-1">
+                  <p className="mt-1 ml-1 text-[10px] font-bold text-rose-500 uppercase">
                     {errors.confirmPassword.message}
                   </p>
                 )}
@@ -182,7 +182,7 @@ export default function ResetPasswordPage() {
 
                 <label
                   htmlFor="show"
-                  className="text-[10px] text-slate-500 uppercase tracking-widest font-bold cursor-pointer"
+                  className="cursor-pointer text-[10px] font-bold tracking-widest text-slate-500 uppercase"
                 >
                   Show Passwords
                 </label>
@@ -192,7 +192,7 @@ export default function ResetPasswordPage() {
 
               <Button
                 disabled={resetPassword.isPending}
-                className="w-full h-12 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-white/5"
+                className="h-12 w-full rounded-lg bg-sky-600 text-xs font-bold tracking-[0.2em] text-white uppercase shadow-xl shadow-white/5 transition-all hover:bg-sky-500"
               >
                 {resetPassword.isPending ? (
                   <Loader2 className="animate-spin" size={16} />

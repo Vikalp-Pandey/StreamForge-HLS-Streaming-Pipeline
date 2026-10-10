@@ -31,7 +31,7 @@ async function processQueueMessage(message: Message) {
   await sqsClient.send(
     new DeleteMessageCommand({
       QueueUrl: env.AWS_TRANSCODE_QUEUE_URL,
-      ReceiptHandle: message.ReceiptHandle
+      ReceiptHandle: message.ReceiptHandle,
     }),
   );
 }

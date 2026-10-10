@@ -106,7 +106,6 @@ export enum ErrorType {
   VALIDATION_ERROR = 'Validation Error',
 }
 
-
 export class ApiError extends Error {
   errorType: ErrorType;
   statusCode: ContentfulStatusCode;
@@ -115,7 +114,7 @@ export class ApiError extends Error {
     statusCode: ContentfulStatusCode,
     message: string,
     errorType: ErrorType = ErrorType.INTERNAL_SERVER,
-      ) {
+  ) {
     super(message);
     this.name = 'ApiError';
     this.errorType = errorType;

@@ -4,15 +4,101 @@
 /* deno-fmt-ignore-file */
 /* biome-ignore-all lint: auto-generated */
 
-declare module "sst" {
+declare module 'sst' {
   export interface Resource {
-    "Storex": {
-      "type": "sst.aws.StaticSite"
-      "url": string
-    }
+    Api: {
+      type: 'sst.aws.ApiGatewayV2';
+      url: string;
+    };
+    AwsAccessKeyId: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    AwsSecretAccessKey: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    DatabaseUrl: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    GithubClientId: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    GithubClientSecret: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    GoogleClientId: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    GoogleClientSecret: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    JwtSecret: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    MediaBucket: {
+      name: string;
+      type: 'sst.aws.Bucket';
+    };
+    MediaRouter: {
+      type: 'sst.aws.Router';
+      url: string;
+    };
+    SmtpHost: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    SmtpMail: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    SmtpName: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    SmtpPassword: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    SmtpPort: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    SmtpReplyTo: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    SmtpUsername: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    StreamForgeFrontend: {
+      type: 'sst.aws.StaticSite';
+      url: string;
+    };
+    TranscodeQueue: {
+      type: 'sst.aws.Queue';
+      url: string;
+    };
+    Transcoder: {
+      service: string;
+      type: 'sst.aws.Service';
+    };
+    TranscoderInternalKey: {
+      type: 'sst.sst.Secret';
+      value: string;
+    };
+    TranscoderVpc: {
+      type: 'sst.aws.Vpc';
+    };
   }
 }
-/// <reference path="sst-env.d.ts" />
 
-import "sst"
-export {}
+import 'sst';
+export {};

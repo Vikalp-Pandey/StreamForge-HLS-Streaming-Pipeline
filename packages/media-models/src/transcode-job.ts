@@ -24,9 +24,7 @@ const transcodeJobSchema = new mongoose.Schema(
   { timestamps: true, versionKey: false },
 );
 
-export type TranscodeJobDocument = InferSchemaType<
-  typeof transcodeJobSchema
->;
+export type TranscodeJobDocument = InferSchemaType<typeof transcodeJobSchema>;
 
 const TranscodeJob = mongoose.model<TranscodeJobDocument>(
   'TranscodeJob',

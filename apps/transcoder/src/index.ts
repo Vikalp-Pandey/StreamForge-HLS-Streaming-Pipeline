@@ -3,10 +3,7 @@ import { env } from '@repo/env/server';
 import { serve } from '@hono/node-server';
 import { logger } from '@packages/httputils';
 
-import {
-  connectToMongoDB,
-  disconnectFromMongoDB,
-} from '@repo/database/mongo';
+import { connectToMongoDB, disconnectFromMongoDB } from '@repo/database/mongo';
 
 import app from '@/app';
 import { startTranscodeWorker } from '@/transcode.worker';

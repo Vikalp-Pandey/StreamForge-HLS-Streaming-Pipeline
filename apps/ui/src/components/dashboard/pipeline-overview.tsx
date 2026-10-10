@@ -32,9 +32,7 @@ export function PipelineOverview() {
     <section className="rounded-2xl border border-white/7 bg-[#0d1117] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.14)] lg:p-6">
       <div className="mb-5 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-medium text-sky-400">
-            Processing path
-          </p>
+          <p className="text-xs font-medium text-sky-400">Processing path</p>
           <h2 className="mt-1.5 text-lg font-semibold text-white">
             How a video becomes a stream
           </h2>

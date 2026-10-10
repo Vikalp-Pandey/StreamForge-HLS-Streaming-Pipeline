@@ -599,7 +599,6 @@
 //   );
 // }
 
-
 import React from 'react';
 
 import {
@@ -643,7 +642,8 @@ function EmailWrapper({
         <Body
           style={{
             backgroundColor: brand.bg,
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            fontFamily:
+              '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             margin: 0,
             padding: 0,
           }}
@@ -660,14 +660,16 @@ function EmailWrapper({
           >
             {/* Logo Section */}
             <Section style={{ textAlign: 'center', marginBottom: '32px' }}>
-               <Text style={{ 
-                 fontSize: '24px', 
-                 fontWeight: '800', 
-                 color: brand.text, 
-                 letterSpacing: '-0.05em' 
-               }}>
-                 Store<span style={{ color: brand.primary }}>X</span>
-               </Text>
+              <Text
+                style={{
+                  fontSize: '24px',
+                  fontWeight: '800',
+                  color: brand.text,
+                  letterSpacing: '-0.05em',
+                }}
+              >
+                Store<span style={{ color: brand.primary }}>X</span>
+              </Text>
             </Section>
 
             {/* Main Content Card */}
@@ -772,8 +774,8 @@ export function EmailVerification({ otp, name }: EmailVerificationProps) {
       <Text style={bodyText}>Hi {name},</Text>
 
       <Text style={bodyText}>
-        Thanks for joining StoreX! Please use the following one-time password (OTP) 
-        to verify your email address and complete your registration.
+        Thanks for joining StoreX! Please use the following one-time password
+        (OTP) to verify your email address and complete your registration.
       </Text>
 
       {/* OTP BOX */}
@@ -782,7 +784,8 @@ export function EmailVerification({ otp, name }: EmailVerificationProps) {
       </Section>
 
       <Text style={smallText}>
-        This code is valid for <strong style={{ color: brand.text }}>5 minutes</strong>.
+        This code is valid for{' '}
+        <strong style={{ color: brand.text }}>5 minutes</strong>.
       </Text>
 
       <Hr style={divider} />
@@ -811,20 +814,23 @@ export function ResetPassword({ url, name }: ResetPasswordProps) {
       <Text style={bodyText}>Hi {name},</Text>
 
       <Text style={bodyText}>
-        We received a request to reset the password for your StoreX account. 
+        We received a request to reset the password for your StoreX account.
         Click the button below to choose a new one.
       </Text>
 
       <ActionButton href={url} label="Reset Password" />
 
       <Text style={smallText}>
-        This link will expire in <strong style={{ color: brand.text }}>1 hour</strong> for security reasons.
+        This link will expire in{' '}
+        <strong style={{ color: brand.text }}>1 hour</strong> for security
+        reasons.
       </Text>
 
       <Hr style={divider} />
 
       <Text style={footerNote}>
-        If you didn't request a password reset, your password will remain unchanged.
+        If you didn't request a password reset, your password will remain
+        unchanged.
       </Text>
     </EmailWrapper>
   );

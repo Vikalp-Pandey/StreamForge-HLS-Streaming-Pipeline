@@ -8,7 +8,6 @@ import { downloadSource } from '@/services/download-source.service';
 import { createHlsOutput } from '@/services/ffmpeg-hls.service';
 import { uploadHlsDirectory } from '@/services/upload-hls.service';
 
-
 export async function processTranscodeJob(transcodeJobId: string) {
   const staleBefore = new Date(Date.now() - env.STALE_PROCESSING_MS);
   const job = await TranscodeJob.findOneAndUpdate(
@@ -72,5 +71,3 @@ export async function processTranscodeJob(transcodeJobId: string) {
     }
   }
 }
-
-

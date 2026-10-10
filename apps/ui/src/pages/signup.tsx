@@ -7,14 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Eye,
-  EyeOff,
-  Loader2,
-  User,
-  Mail,
-  Lock,
-} from 'lucide-react';
+import { Eye, EyeOff, Loader2, User, Mail, Lock } from 'lucide-react';
 import { Brand } from '@/components/brand';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
@@ -49,16 +42,13 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-[#050505] font-sans selection:bg-sky-500/30 text-slate-200">
+    <div className="grid min-h-screen bg-[#050505] font-sans text-slate-200 selection:bg-sky-500/30 lg:grid-cols-2">
       {/* LEFT SIDE: Minimalist Brand Identity */}
-      <div className="hidden lg:flex flex-col justify-between p-24 bg-[#080808] relative overflow-hidden border-r border-white/3">
-        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-sky-900/10 blur-[120px] rounded-full" />
+      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-white/3 bg-[#080808] p-24 lg:flex">
+        <div className="absolute right-[-10%] bottom-[-20%] h-[70%] w-[70%] rounded-full bg-sky-900/10 blur-[120px]" />
 
         <div className="relative z-10">
-          <Link
-            to="/"
-            className="inline-flex"
-          >
+          <Link to="/" className="inline-flex">
             <Brand />
           </Link>
         </div>
@@ -69,23 +59,23 @@ export default function SignupPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl font-light leading-[1.2] text-white tracking-tight">
+            <h1 className="text-5xl leading-[1.2] font-light tracking-tight text-white">
               Protect your identity <br />
-              <span className="text-slate-500 font-medium">
+              <span className="font-medium text-slate-500">
                 with secure custody.
               </span>
             </h1>
           </motion.div>
           <div className="h-px w-12 bg-sky-500" />
-          <p className="max-w-xs text-sm text-slate-500 font-light leading-relaxed tracking-wide">
+          <p className="max-w-xs text-sm leading-relaxed font-light tracking-wide text-slate-500">
             Create a verified account protected by password hashing and email
             verification.
           </p>
         </div>
 
-        <div className="relative z-10 flex items-center gap-4 text-[10px] tracking-[0.2em] text-slate-600 font-bold uppercase">
+        <div className="relative z-10 flex items-center gap-4 text-[10px] font-bold tracking-[0.2em] text-slate-600 uppercase">
           <span>Enterprise Ready</span>
-          <span className="w-1 h-1 rounded-full bg-slate-800" />
+          <span className="h-1 w-1 rounded-full bg-slate-800" />
           <span>v3.0 Secure</span>
         </div>
       </div>
@@ -99,10 +89,10 @@ export default function SignupPage() {
         >
           <div className="space-y-10">
             <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-white tracking-tight">
+              <h2 className="text-2xl font-semibold tracking-tight text-white">
                 Create Console Account
               </h2>
-              <p className="text-slate-500 text-sm">
+              <p className="text-sm text-slate-500">
                 Initialize your identity to begin deployment.
               </p>
             </div>
@@ -110,19 +100,19 @@ export default function SignupPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               {/* Full Name */}
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                <Label className="ml-1 text-[11px] font-bold tracking-widest text-slate-500 uppercase">
                   Full Name
                 </Label>
                 <div className="relative">
-                  <User className="absolute left-4 top-3.5 h-4 w-4 text-slate-700" />
+                  <User className="absolute top-3.5 left-4 h-4 w-4 text-slate-700" />
                   <Input
                     {...form.register('name')}
                     placeholder="Enter full name"
-                    className={`h-12 pl-11 rounded-lg border-white/5 bg-white/2 text-white focus:border-sky-500/50 focus:ring-0 placeholder:text-slate-700 transition-all ${form.formState.errors.name ? 'border-rose-500/40' : ''}`}
+                    className={`h-12 rounded-lg border-white/5 bg-white/2 pl-11 text-white transition-all placeholder:text-slate-700 focus:border-sky-500/50 focus:ring-0 ${form.formState.errors.name ? 'border-rose-500/40' : ''}`}
                   />
                 </div>
                 {form.formState.errors.name && (
-                  <p className="text-[10px] text-rose-500 font-medium tracking-wide uppercase mt-1 ml-1">
+                  <p className="mt-1 ml-1 text-[10px] font-medium tracking-wide text-rose-500 uppercase">
                     {form.formState.errors.name.message}
                   </p>
                 )}
@@ -130,19 +120,19 @@ export default function SignupPage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                <Label className="ml-1 text-[11px] font-bold tracking-widest text-slate-500 uppercase">
                   Work Email
                 </Label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-3.5 h-4 w-4 text-slate-700" />
+                  <Mail className="absolute top-3.5 left-4 h-4 w-4 text-slate-700" />
                   <Input
                     {...form.register('email')}
                     placeholder="name@company.com"
-                    className={`h-12 pl-11 rounded-lg border-white/5 bg-white/2 text-white focus:border-sky-500/50 focus:ring-0 placeholder:text-slate-700 transition-all ${form.formState.errors.email ? 'border-rose-500/40' : ''}`}
+                    className={`h-12 rounded-lg border-white/5 bg-white/2 pl-11 text-white transition-all placeholder:text-slate-700 focus:border-sky-500/50 focus:ring-0 ${form.formState.errors.email ? 'border-rose-500/40' : ''}`}
                   />
                 </div>
                 {form.formState.errors.email && (
-                  <p className="text-[10px] text-rose-500 font-medium tracking-wide uppercase mt-1 ml-1">
+                  <p className="mt-1 ml-1 text-[10px] font-medium tracking-wide text-rose-500 uppercase">
                     {form.formState.errors.email.message}
                   </p>
                 )}
@@ -150,37 +140,37 @@ export default function SignupPage() {
 
               {/* Password */}
               <div className="space-y-2">
-                <Label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 ml-1">
+                <Label className="ml-1 text-[11px] font-bold tracking-widest text-slate-500 uppercase">
                   Access Key
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-3.5 h-4 w-4 text-slate-700" />
+                  <Lock className="absolute top-3.5 left-4 h-4 w-4 text-slate-700" />
                   <Input
                     {...form.register('password')}
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className={`h-12 pl-11 rounded-lg border-white/5 bg-white/2 text-white focus:border-sky-500/50 focus:ring-0 placeholder:text-slate-700 transition-all ${form.formState.errors.password ? 'border-rose-500/40' : ''}`}
+                    className={`h-12 rounded-lg border-white/5 bg-white/2 pl-11 text-white transition-all placeholder:text-slate-700 focus:border-sky-500/50 focus:ring-0 ${form.formState.errors.password ? 'border-rose-500/40' : ''}`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-3.5 text-slate-600 hover:text-slate-300"
+                    className="absolute top-3.5 right-4 text-slate-600 hover:text-slate-300"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
                 {form.formState.errors.password && (
-                  <p className="text-[10px] text-rose-500 font-medium tracking-wide uppercase mt-1 ml-1">
+                  <p className="mt-1 ml-1 text-[10px] font-medium tracking-wide text-rose-500 uppercase">
                     {form.formState.errors.password.message}
                   </p>
                 )}
               </div>
 
-              <p className="text-center text-slate-600 text-[13px]">
+              <p className="text-center text-[13px] text-slate-600">
                 Already registered?{' '}
                 <Link
                   to="/login"
-                  className="text-slate-300 font-semibold hover:text-sky-500 transition-colors"
+                  className="font-semibold text-slate-300 transition-colors hover:text-sky-500"
                 >
                   Log in to Console
                 </Link>
@@ -188,7 +178,7 @@ export default function SignupPage() {
 
               <Button
                 disabled={signup.isPending}
-                className="w-full h-12 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-bold text-sm shadow-lg shadow-sky-900/20 transition-all active:scale-[0.99]"
+                className="h-12 w-full rounded-lg bg-sky-600 text-sm font-bold text-white shadow-lg shadow-sky-900/20 transition-all hover:bg-sky-500 active:scale-[0.99]"
               >
                 {signup.isPending ? (
                   <Loader2 className="animate-spin" />
@@ -202,7 +192,7 @@ export default function SignupPage() {
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t border-white/5"></span>
               </div>
-              <div className="relative flex justify-center text-[10px] uppercase tracking-widest">
+              <div className="relative flex justify-center text-[10px] tracking-widest uppercase">
                 <span className="bg-[#050505] px-4 text-slate-600">
                   Quick Authenticate
                 </span>
@@ -212,13 +202,13 @@ export default function SignupPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => handleOAuth('google')}
-                className="flex items-center justify-center gap-2 h-11 rounded-lg border border-white/5 bg-white/1 hover:bg-white/4 text-xs font-medium text-slate-400 hover:text-white transition-all"
+                className="flex h-11 items-center justify-center gap-2 rounded-lg border border-white/5 bg-white/1 text-xs font-medium text-slate-400 transition-all hover:bg-white/4 hover:text-white"
               >
                 <FaGoogle size={14} /> Google
               </button>
               <button
                 onClick={() => handleOAuth('github')}
-                className="flex items-center justify-center gap-2 h-11 rounded-lg border border-white/5 bg-white/1 hover:bg-white/4 text-xs font-medium text-slate-400 hover:text-white transition-all"
+                className="flex h-11 items-center justify-center gap-2 rounded-lg border border-white/5 bg-white/1 text-xs font-medium text-slate-400 transition-all hover:bg-white/4 hover:text-white"
               >
                 <FaGithub size={14} /> GitHub
               </button>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {env} from '@repo/env/client';
+import { env } from '@repo/env/client';
 
 const baseURL = env.VITE_API_URL;
 console.log(baseURL);

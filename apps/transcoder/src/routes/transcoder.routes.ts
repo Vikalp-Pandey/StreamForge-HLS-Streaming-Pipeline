@@ -10,6 +10,9 @@ const transcoderRoutes = new Hono();
 
 transcoderRoutes.use('/internal/*', validateInternalKey);
 transcoderRoutes.get('/internal/jobs/:jobId', getTranscodeJobController);
-transcoderRoutes.post('/internal/jobs/:jobId/process',processTranscodeJobController);
+transcoderRoutes.post(
+  '/internal/jobs/:jobId/process',
+  processTranscodeJobController,
+);
 
 export default transcoderRoutes;

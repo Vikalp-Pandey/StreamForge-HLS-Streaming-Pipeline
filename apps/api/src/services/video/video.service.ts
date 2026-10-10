@@ -33,7 +33,6 @@ const createRecoveredPartFingerprint = (
     )
     .digest('hex');
 
-    
 async function findOwnedUpload(ownerId: string, videoId: string) {
   return Video.findOne({
     _id: videoId,
@@ -117,7 +116,7 @@ export async function startVideoUpload(input: {
       alreadyUploaded: true as const,
       videoStatus: existingVideo.status,
       transcodeJobId: transcodeJob?._id.toString(),
-      transcodeStatus: transcodeJob?.status ,
+      transcodeStatus: transcodeJob?.status,
     };
   }
 

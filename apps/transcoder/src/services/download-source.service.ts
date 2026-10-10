@@ -4,8 +4,6 @@ import { pipeline } from 'node:stream/promises';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client } from '@repo/clients/s3';
 
-
-
 export async function downloadSource(
   sourceKey: string,
   destinationPath: string,

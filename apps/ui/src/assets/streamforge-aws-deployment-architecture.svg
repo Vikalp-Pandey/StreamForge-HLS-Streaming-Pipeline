@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title description">
+  <title id="title">StreamForge AWS Deployment Architecture</title>
+  <desc id="description">Architecture diagram showing the React client, API Gateway, Lambda API, private S3 media storage, SQS queue, ECS Fargate FFmpeg transcoder, CloudFront OAC playback, MongoDB Atlas, OAuth providers, and SMTP.</desc>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b" />
+    </marker>
+    <style>
+      .title { font: 700 34px Inter, ui-sans-serif, system-ui, sans-serif; fill: #0f172a; }
+      .subtitle { font: 400 17px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .group-title { font: 700 19px Inter, ui-sans-serif, system-ui, sans-serif; letter-spacing: 1px; fill: #334155; }
+      .box-title { font: 700 18px Inter, ui-sans-serif, system-ui, sans-serif; fill: #172033; }
+      .box-copy { font: 400 14px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .label { font: 600 13px Inter, ui-sans-serif, system-ui, sans-serif; fill: #475569; }
+      .flow { fill: none; stroke: #64748b; stroke-width: 3; marker-end: url(#arrow); }
+      .flow-dashed { fill: none; stroke: #64748b; stroke-width: 3; stroke-dasharray: 9 7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" fill="#f8fafc" />
+
+  <text x="800" y="58" text-anchor="middle" class="title">StreamForge AWS Deployment Architecture</text>
+  <text x="800" y="90" text-anchor="middle" class="subtitle">Resumable upload, queue-backed transcoding, and adaptive HLS playback</text>
+
+  <rect x="225" y="125" width="1335" height="690" rx="26" fill="#fff7ed" stroke="#f97316" stroke-width="2" />
+  <text x="255" y="166" class="group-title">AWS DEPLOYED WITH SST</text>
+
+  <rect x="34" y="274" width="165" height="112" rx="18" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" />
+  <text x="116" y="318" text-anchor="middle" class="box-title">Browser</text>
+  <text x="116" y="346" text-anchor="middle" class="box-copy">React + Vite</text>
+  <text x="116" y="368" text-anchor="middle" class="box-copy">Video.js client</text>
+
+  <!-- Primary request and data-flow arrows -->
+  <path d="M199 303 L270 251" class="flow" />
+  <text x="206" y="263" class="label">app</text>
+
+  <path d="M199 330 L550 330" class="flow" />
+  <text x="325" y="319" class="label">authenticated API requests</text>
+
+  <path d="M199 366 C250 470 282 493 335 493" class="flow-dashed" />
+  <text x="210" y="446" class="label">presigned multipart upload</text>
+
+  <path d="M730 330 L785 330" class="flow" />
+  <text x="738" y="318" class="label">invoke</text>
+
+  <path d="M895 392 L895 460" class="flow" />
+  <text x="908" y="431" class="label">enqueue</text>
+
+  <path d="M530 520 C690 602 890 602 1050 530" class="flow" />
+  <text x="735" y="592" class="label">download source</text>
+
+  <path d="M1000 500 L1050 500" class="flow" />
+  <text x="1009" y="488" class="label">consume</text>
+
+  <path d="M1265 500 L1312 500" class="flow" />
+  <text x="1269" y="488" class="label">HLS output</text>
+
+  <path d="M1312 634 L1180 671" class="flow" />
+  <text x="1225" y="640" class="label">private origin</text>
+
+  <path d="M970 683 C670 788 270 770 190 386" class="flow" />
+  <text x="506" y="751" class="label">adaptive HLS playback</text>
+
+  <path d="M830 392 C770 650 665 805 520 890" class="flow-dashed" />
+  <text x="645" y="790" class="label">metadata + status</text>
+
+  <path d="M930 392 C1040 640 1030 810 890 890" class="flow-dashed" />
+  <text x="1000" y="788" class="label">OAuth</text>
+
+  <path d="M985 350 C1450 400 1515 760 1270 890" class="flow-dashed" />
+  <text x="1430" y="760" class="label">email</text>
+
+  <!-- AWS service boxes -->
+  <rect x="270" y="205" width="230" height="92" rx="17" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2" />
+  <text x="385" y="242" text-anchor="middle" class="box-title">CloudFront Static Site</text>
+  <text x="385" y="269" text-anchor="middle" class="box-copy">React dashboard delivery</text>
+
+  <rect x="550" y="280" width="180" height="100" rx="17" fill="#ffedd5" stroke="#f97316" stroke-width="2" />
+  <text x="640" y="320" text-anchor="middle" class="box-title">API Gateway</text>
+  <text x="640" y="348" text-anchor="middle" class="box-copy">Public HTTP entry</text>
+
+  <rect x="785" y="268" width="200" height="124" rx="17" fill="#fed7aa" stroke="#f97316" stroke-width="2" />
+  <text x="885" y="308" text-anchor="middle" class="box-title">AWS Lambda</text>
+  <text x="885" y="336" text-anchor="middle" class="box-copy">Hono API + auth</text>
+  <text x="885" y="359" text-anchor="middle" class="box-copy">Upload + playback state</text>
+
+  <rect x="335" y="445" width="195" height="110" rx="17" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" />
+  <text x="432" y="483" text-anchor="middle" class="box-title">Amazon S3</text>
+  <text x="432" y="511" text-anchor="middle" class="box-copy">Private source uploads</text>
+  <text x="432" y="534" text-anchor="middle" class="box-copy">Multipart storage</text>
+
+  <rect x="785" y="454" width="215" height="92" rx="17" fill="#ffedd5" stroke="#f97316" stroke-width="2" />
+  <text x="892" y="491" text-anchor="middle" class="box-title">Amazon SQS</text>
+  <text x="892" y="519" text-anchor="middle" class="box-copy">Transcode job queue</text>
+
+  <rect x="1050" y="438" width="215" height="124" rx="17" fill="#fed7aa" stroke="#f97316" stroke-width="2" />
+  <text x="1157" y="478" text-anchor="middle" class="box-title">ECS Fargate</text>
+  <text x="1157" y="506" text-anchor="middle" class="box-copy">Docker worker</text>
+  <text x="1157" y="529" text-anchor="middle" class="box-copy">FFmpeg renditions</text>
+
+  <rect x="1312" y="438" width="205" height="124" rx="17" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" />
+  <text x="1414" y="478" text-anchor="middle" class="box-title">Amazon S3</text>
+  <text x="1414" y="506" text-anchor="middle" class="box-copy">HLS playlists</text>
+  <text x="1414" y="529" text-anchor="middle" class="box-copy">Segments + renditions</text>
+
+  <rect x="970" y="634" width="210" height="98" rx="17" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2" />
+  <text x="1075" y="672" text-anchor="middle" class="box-title">CloudFront Media</text>
+  <text x="1075" y="700" text-anchor="middle" class="box-copy">Keyless OAC delivery</text>
+
+  <rect x="1285" y="650" width="232" height="82" rx="17" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2" />
+  <text x="1401" y="683" text-anchor="middle" class="box-title">CloudWatch + IAM</text>
+  <text x="1401" y="709" text-anchor="middle" class="box-copy">Logs and execution roles</text>
+
+  <!-- Managed services -->
+  <rect x="225" y="830" width="1335" height="180" rx="24" fill="#f0fdf4" stroke="#22c55e" stroke-width="2" />
+  <text x="255" y="870" class="group-title">MANAGED APPLICATION SERVICES</text>
+
+  <rect x="415" y="890" width="205" height="90" rx="15" fill="#dcfce7" stroke="#22c55e" stroke-width="2" />
+  <text x="517" y="926" text-anchor="middle" class="box-title">MongoDB Atlas</text>
+  <text x="517" y="954" text-anchor="middle" class="box-copy">Users, videos, jobs</text>
+
+  <rect x="785" y="890" width="205" height="90" rx="15" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2" />
+  <text x="887" y="926" text-anchor="middle" class="box-title">Google + GitHub</text>
+  <text x="887" y="954" text-anchor="middle" class="box-copy">OAuth identity</text>
+
+  <rect x="1165" y="890" width="205" height="90" rx="15" fill="#dcfce7" stroke="#22c55e" stroke-width="2" />
+  <text x="1267" y="926" text-anchor="middle" class="box-title">SMTP</text>
+  <text x="1267" y="954" text-anchor="middle" class="box-copy">Account email delivery</text>
+</svg>

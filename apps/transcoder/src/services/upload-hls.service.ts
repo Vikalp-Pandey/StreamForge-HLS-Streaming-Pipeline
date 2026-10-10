@@ -4,7 +4,6 @@ import path from 'node:path';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { s3Client } from '@repo/clients/s3';
 
-
 const contentType = (name: string) =>
   name.endsWith('.m3u8') ? 'application/vnd.apple.mpegurl' : 'video/mp2t';
 

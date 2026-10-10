@@ -69,7 +69,7 @@ export default function SignInPage() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_12%,rgba(14,165,233,0.12),transparent_28%),radial-gradient(circle_at_82%_85%,rgba(139,92,246,0.09),transparent_30%)]" />
 
       <section className="relative hidden min-h-screen overflow-hidden border-r border-white/7 px-12 py-10 lg:flex lg:flex-col lg:justify-between xl:px-20 xl:py-14">
-        <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:44px_44px]" />
+        <div className="pointer-events-none absolute inset-0 [background-image:linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] [background-size:44px_44px] opacity-30" />
         <Link to="/" className="relative z-10 w-fit">
           <Brand />
         </Link>
@@ -84,7 +84,7 @@ export default function SignInPage() {
             <span className="size-1.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
             Streaming workspace online
           </span>
-          <h1 className="mt-7 max-w-xl text-5xl font-semibold leading-[1.08] tracking-[-0.045em] text-white xl:text-6xl">
+          <h1 className="mt-7 max-w-xl text-5xl leading-[1.08] font-semibold tracking-[-0.045em] text-white xl:text-6xl">
             From source file to{' '}
             <span className="bg-gradient-to-r from-sky-300 via-cyan-200 to-violet-300 bg-clip-text text-transparent">
               adaptive stream.
@@ -149,11 +149,17 @@ export default function SignInPage() {
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="ml-1 text-[10px] font-bold tracking-[0.16em] text-slate-500 uppercase">
+              <Label
+                htmlFor="email"
+                className="ml-1 text-[10px] font-bold tracking-[0.16em] text-slate-500 uppercase"
+              >
                 Email address
               </Label>
               <div className="relative">
-                <Mail className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-600" size={16} />
+                <Mail
+                  className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-600"
+                  size={16}
+                />
                 <Input
                   id="email"
                   autoComplete="email"
@@ -163,21 +169,32 @@ export default function SignInPage() {
                 />
               </div>
               {form.formState.errors.email && (
-                <p className="ml-1 text-[11px] text-rose-400">{form.formState.errors.email.message}</p>
+                <p className="ml-1 text-[11px] text-rose-400">
+                  {form.formState.errors.email.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between px-1">
-                <Label htmlFor="password" className="text-[10px] font-bold tracking-[0.16em] text-slate-500 uppercase">
+                <Label
+                  htmlFor="password"
+                  className="text-[10px] font-bold tracking-[0.16em] text-slate-500 uppercase"
+                >
                   Password
                 </Label>
-                <Link to="/forgot-password" className="text-[11px] font-medium text-sky-400/75 transition hover:text-sky-300">
+                <Link
+                  to="/forgot-password"
+                  className="text-[11px] font-medium text-sky-400/75 transition hover:text-sky-300"
+                >
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
-                <LockKeyhole className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-600" size={16} />
+                <LockKeyhole
+                  className="absolute top-1/2 left-4 -translate-y-1/2 text-slate-600"
+                  size={16}
+                />
                 <Input
                   id="password"
                   autoComplete="current-password"
@@ -196,7 +213,9 @@ export default function SignInPage() {
                 </button>
               </div>
               {form.formState.errors.password && (
-                <p className="ml-1 text-[11px] text-rose-400">{form.formState.errors.password.message}</p>
+                <p className="ml-1 text-[11px] text-rose-400">
+                  {form.formState.errors.password.message}
+                </p>
               )}
             </div>
 
@@ -208,29 +227,48 @@ export default function SignInPage() {
               {signin.isPending ? (
                 <Loader2 className="animate-spin" />
               ) : (
-                <>Sign in to workspace <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" /></>
+                <>
+                  Sign in to workspace{' '}
+                  <ArrowRight
+                    size={16}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </>
               )}
             </Button>
           </form>
 
           <div className="my-7 flex items-center gap-3">
             <span className="h-px flex-1 bg-white/7" />
-            <span className="text-[10px] font-medium tracking-[0.12em] text-slate-700 uppercase">or continue with</span>
+            <span className="text-[10px] font-medium tracking-[0.12em] text-slate-700 uppercase">
+              or continue with
+            </span>
             <span className="h-px flex-1 bg-white/7" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <button type="button" onClick={() => handleOAuth('google')} className="flex h-12 items-center justify-center gap-2.5 rounded-xl border border-white/8 bg-white/[0.025] text-xs font-medium text-slate-400 transition hover:border-white/15 hover:bg-white/[0.055] hover:text-white">
+            <button
+              type="button"
+              onClick={() => handleOAuth('google')}
+              className="flex h-12 items-center justify-center gap-2.5 rounded-xl border border-white/8 bg-white/[0.025] text-xs font-medium text-slate-400 transition hover:border-white/15 hover:bg-white/[0.055] hover:text-white"
+            >
               <FaGoogle size={14} /> Google
             </button>
-            <button type="button" onClick={() => handleOAuth('github')} className="flex h-12 items-center justify-center gap-2.5 rounded-xl border border-white/8 bg-white/[0.025] text-xs font-medium text-slate-400 transition hover:border-white/15 hover:bg-white/[0.055] hover:text-white">
+            <button
+              type="button"
+              onClick={() => handleOAuth('github')}
+              className="flex h-12 items-center justify-center gap-2.5 rounded-xl border border-white/8 bg-white/[0.025] text-xs font-medium text-slate-400 transition hover:border-white/15 hover:bg-white/[0.055] hover:text-white"
+            >
               <FaGithub size={15} /> GitHub
             </button>
           </div>
 
           <p className="mt-8 text-center text-sm text-slate-600">
             New to StreamForge?{' '}
-            <Link to="/signup" className="font-semibold text-slate-300 transition hover:text-sky-300">
+            <Link
+              to="/signup"
+              className="font-semibold text-slate-300 transition hover:text-sky-300"
+            >
               Create an account
             </Link>
           </p>

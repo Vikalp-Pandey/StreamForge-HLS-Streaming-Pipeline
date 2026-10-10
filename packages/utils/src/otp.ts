@@ -1,4 +1,4 @@
-import { randomInt } from "crypto";
+import { randomInt } from 'crypto';
 
 export const generateOTP = (length: number = 6): string => {
   let otp = '';
